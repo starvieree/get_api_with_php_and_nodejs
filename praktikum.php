@@ -15,6 +15,10 @@ if ($response !== false) {
     die('Error fetching data from the API');
 }
 
+// Mendapatkan filter dari form (jika ada)
+$filter_id = isset($_GET['id']) ? $_GET['id'] : '';
+$filter_name = isset($_GET['name']) ? $_GET['name'] : '';
+
 ?>
 
 <!DOCTYPE html>
@@ -72,22 +76,44 @@ if ($response !== false) {
         tr:last-child td {
             border-bottom: 2px solid #4CAF50;
         }
-        @media (max-width: 768px) {
-            table {
-                width: 100%;
-            }
-            th, td {
-                font-size: 12px;
-            }
+        .filter-form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .filter-form input {
+            padding: 8px;
+            font-size: 14px;
+            margin: 0 10px;
+        }
+        .filter-form button {
+            padding: 8px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .filter-form button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
     <h1>Data Countries dari REST Countries API (PHP)</h1>
+
+    <!-- Form untuk filter data -->
+    <div class="filter-form">
+        <form method="GET" action="">
+            <input type="text" name="id" placeholder="Filter by ID" value="<?php echo htmlspecialchars($filter_id); ?>">
+            <input type="text" name="name" placeholder="Filter by Country Name" value="<?php echo htmlspecialchars($filter_name); ?>">
+            <button type="submit">Filter</button>
+        </form>
+    </div>
+
     <table>
         <thead>
             <tr>
                 <th>No.</th>
+                <th>ID</th>
                 <th>Country Name</th>
                 <th>Capital</th>
                 <th>Region</th>
@@ -98,20 +124,25 @@ if ($response !== false) {
             <?php 
             // Memeriksa apakah data negara tersedia
             if (!empty($countries)) {
-                // Ambil hanya 5 negara pertama
-                $countries = array_slice($countries, 0, 5);
-                
                 $no = 1; // Untuk penomoran baris
                 foreach ($countries as $country) {
                     // Mendapatkan nama negara, ibu kota, wilayah, dan populasi
+                    $id = isset($country['cca3']) ? $country['cca3'] : 'N/A'; // ID Negara (misalnya: USA)
                     $name = isset($country['name']['common']) ? $country['name']['common'] : 'N/A';
                     $capital = isset($country['capital'][0]) ? $country['capital'][0] : 'N/A';
                     $region = isset($country['region']) ? $country['region'] : 'N/A';
                     $population = isset($country['population']) ? number_format($country['population']) : 'N/A';
-                    
+
+                    // Filter berdasarkan ID dan Nama
+                    if (($filter_id && stripos($id, $filter_id) === false) || 
+                        ($filter_name && stripos($name, $filter_name) === false)) {
+                        continue; // Lewati jika tidak sesuai filter
+                    }
+
                     // Menampilkan data negara dalam bentuk tabel
                     echo "<tr>
                         <td>{$no}</td>
+                        <td>{$id}</td>
                         <td>{$name}</td>
                         <td>{$capital}</td>
                         <td>{$region}</td>
@@ -121,7 +152,7 @@ if ($response !== false) {
                     $no++;
                 }
             } else {
-                echo '<tr><td colspan="5">No data available</td></tr>';
+                echo '<tr><td colspan="6">No data available</td></tr>';
             }
             ?>
         </tbody>
