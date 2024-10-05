@@ -24,19 +24,61 @@ if ($response !== false) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Countries dari REST Countries API (PHP)</title>
     <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
         table {
-            width: 100%;
+            width: 80%;
+            margin: 20px auto;
             border-collapse: collapse;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         table, th, td {
-            border: 1px solid black;
+            border: 1px solid #ddd;
         }
         th, td {
-            padding: 15px;
+            padding: 12px;
             text-align: left;
         }
         th {
+            background-color: #4CAF50;
+            color: white;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+        td {
+            background-color: #fff;
+            color: #333;
+        }
+        tr:nth-child(even) td {
             background-color: #f2f2f2;
+        }
+        tr:hover td {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+        tr td:first-child {
+            text-align: center;
+            font-weight: bold;
+        }
+        tr:last-child td {
+            border-bottom: 2px solid #4CAF50;
+        }
+        @media (max-width: 768px) {
+            table {
+                width: 100%;
+            }
+            th, td {
+                font-size: 12px;
+            }
         }
     </style>
 </head>
@@ -56,6 +98,9 @@ if ($response !== false) {
             <?php 
             // Memeriksa apakah data negara tersedia
             if (!empty($countries)) {
+                // Ambil hanya 5 negara pertama
+                $countries = array_slice($countries, 0, 5);
+                
                 $no = 1; // Untuk penomoran baris
                 foreach ($countries as $country) {
                     // Mendapatkan nama negara, ibu kota, wilayah, dan populasi
